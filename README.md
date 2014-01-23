@@ -16,8 +16,21 @@ open.163.com
 
 Usage:
 
-python main.py video_addr
+python main.py video_url
 
-python [-l | --list] playlist_addr
+python [-l | --list] playlist_url
 
 python [-f | --from_file] video_url_file
+
+
+Note:
+
+These two modules:
+
+mp4_join.py
+
+flv_join.py 
+
+are from github.com/iambus/youku-lixian.
+
+Thanks to iambus. Please contact me if this caused some unconveniency.
