@@ -5,7 +5,7 @@ Online video digger for several chinese most popular online video sites.
 
 Currently supported sites are:
 
-youku.com
+youku.com(Not finished yet,please use tudou.com links)
 
 tudou.com
 
