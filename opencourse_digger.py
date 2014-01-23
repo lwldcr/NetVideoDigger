@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # 2014/1/20 lwldcr@gmail.com
 
@@ -146,7 +146,7 @@ def cbk(a, b, c):
 def checkArgs():
 	"""Check if arguments proper."""
 	assert len(sys.argv) >= 2, "Argument not enough!"
-	if sys.argv[1] in ['-l', '--list']:
+	if sys.argv[1] in ['-f', '--file']:
 		assert len(sys.argv) > 2, "Url list file not given!"
 		return True
 	return False
@@ -156,7 +156,7 @@ def Usage():
 	info = """
 Usage:
 	python %s course_url
-	python %s [-l | --list] url_file
+	python %s [-f | --file] url_file
 	""" % (sys.argv[0], sys.argv[0])
 	print info,
 	sys.exit(1)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # 2014/01/15 lwldcr@gmail.com
 
@@ -6,11 +6,18 @@
 # Tudou video downloader #
 ##########################
 
-import os,sys
+import os
 import urllib,re
 from time import time
 
-outputDir = '/Volumes/HDD_OSX_Data/Video'
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
+
+if os.name == 'nt':
+	videoDir = 'D:\\Video'
+else:
+	videoDir = '/Volumes/HDD_OSX_Data/Video'
 
 class videoHtml(object):
 	def __init__(self,url='',vcode='',title=''):
@@ -42,24 +49,24 @@ class videoHtml(object):
 			return
         
 		try:
-			self.html = self.html.decode('gbk','ignore')
+			self.html = self.html.decode('gbk')
 		except:
 			self.html = self.html.decode('utf-8','ignore')
 
 		if self.html:
 			self.html = self.html
-            # 首先尝试寻找segs字段，读取视频的k值
+            		# 首先尝试寻找segs字段，读取视频的k值
 			self.rs = re.search(r'segs:\s*\'{(.*?)}]}\'', self.html)
 			self.title = re.search(r',kw:\s*\"(.*?)\"', self.html)
 		if not self.rs:
-            # 如果未找到k，则尝试读取vcode
+            		# 如果未找到k，则尝试读取vcode
 			self.vcode = re.search(r',vcode:\s*\'(.*?)\'', self.html)
 			if not self.vcode:
 				print "Cannot find proper video address!"
 				return
 			else:
 				self.vcode = self.vcode.group(1)
-        #正确分离到title后，提取出来
+        	#正确分离到title后，提取出来
 		if self.title:
 			self.title = self.title.group(1)
 
@@ -95,8 +102,7 @@ class videoHtml(object):
 			infoList = info.split(',')
 			self.parts.append(infoList[1].split(':')[1])
 			self.ks.append(infoList[3].split(':')[1])
-		print self.parts,self.ks
-
+		return
 
 	def parseUrl(self):
 		"""parse video url"""
@@ -113,7 +119,7 @@ class videoHtml(object):
 			if not self.vhtml:
 				continue
 			self.vurls.append(re.search(r'\<f.*?\>(http\:\/\/.*?)\</f', self.vhtml).group(1))
-		print self.vurls
+		return
 
 	def parseVcode(self):
 		"""parse vcode"""
@@ -216,6 +222,7 @@ def judgeAvailable(filename, url):
 	
 def download(url,title,type,i=0):
 	"Download video from internet"
+	urllib.socket.setdefaulttimeout(30)
 	url = url.replace('amp;','')
 	if type == 0:
 		suffix = re.search(r'http:\/\/.*?\/(.*?)\/',url).group(1)
@@ -292,28 +299,34 @@ def judgeUrl(url):
 
 def main(*args, **kwargs):
 	"main function"
-	assert len(sys.argv) == 3, Usage()
-	if len(sys.argv) != 3:
-		Usage()
-	elif sys.argv[1] not in ['v','l']:
-		Usage()
-	if not judgeUrl(sys.argv[2]):
+	assert len(sys.argv) >= 2, Usage()
+	d_list = 0
+	if len(sys.argv) == 3:
+		if sys.argv[1] not in [ '-l', '--list' ]:
+			Usage()
+		else:
+			d_list = 1
+			url = sys.argv[2]
+	else:
+		url = sys.argv[1]
+
+	if not judgeUrl(url):
 		print '***Illegal url given***'
 		print 'Currently only \"tudou.com\" supported!'
 		Usage()
-	if not os.path.exists(outputDir):
-		os.mkdir(outputDir)
-	print '***Changing working directory to:\"%s\"' % (outputDir),
+	if not os.path.exists(videoDir):
+		os.mkdir(videoDir)
+	print 'Changing working directory to:\"%s\..."' % (videoDir),
 	try:
-		os.chdir(outputDir)
+		os.chdir(videoDir)
 		print "Done!"
 	except:
 		print "Failed! Will use \"%s\" as working directory." % (os.getcwd())
 	print '--------Misson Launched---------'
-	if sys.argv[1] == 'v':
-		singleDownload(sys.argv[2])
+	if d_list == 0:
+		singleDownload(url)
 	else:
-		albumDownload(sys.argv[2])
+		albumDownload(url)
 	print '------Misson Accomplished-------'
 
 def albumDownload(url):
@@ -326,7 +339,7 @@ def albumDownload(url):
 	if not fs:
 		print "Cannot download given album!"
 		return
-	title = re.search(r'title:\s*\'(.*)\'\s*,',fs).group(1).encode('utf-8')
+	title = re.search(r'title:\s*\'(.*)\'\s*,',fs).group(1)
 	try:
 		print 'Entering list directory:\"%s\"' % (title),
 		if not os.path.exists(title):
@@ -337,6 +350,7 @@ def albumDownload(url):
 		print 'Failed!Use \"%s\" instead!"' % (os.getcwd())
 
 	# 视频来源依然是youku，从soku链接解析视频地址
+	title = title.encode('utf-8')
 	soku_url = 'http://www.soku.com/v?keyword=' + repr(title).replace(r'\x','%')[1:-1]
 
 	try:

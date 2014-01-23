@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # 2014/1/20 lwldcr@gmail.com
 
@@ -41,9 +41,9 @@ class Letv(object):
 			pass
 		assert self.html, "fetching page:\"%s\" failed!" % (xmlAdd)
 
-		pattern = r'\:.*?\[\"(http.*?)\"\,.*?\,\"(.*?.flv)\"'
+		base_pattern = r'\:.*?\[\"(http.*?)\"\,.*?\,\"(.*?.flv)\"'
 		for r in res:
-			pattern = r'\"' + r + r'\"' + pattern
+			pattern = r'\"' + r + r'\"' + base_pattern
 			try:
 				ks = re.search(pattern, self.html, re.S)
 				part1 = ks.group(1)
@@ -51,9 +51,11 @@ class Letv(object):
 				self.vurl = str(part1 + part2).replace('\\','')
 				return True
 			except:
-				return False
+				pass
+		return False
 
 	def download(self):
+		urllib.socket.setdefaulttimeout(30)
 		try:
 			print "Start downloading \"%s\"... " % (self.title)
 			urllib.urlretrieve(self.vurl, self.title, cbk)
