@@ -29,12 +29,15 @@ class Course(object):
 			# 推导得到将要下载的文件信息列表
 			keylist = []
 			i = 0
+			for (i, url) in enumerate(self.vurls):
+				vname = '-'.join([self.ns[i][0], self.ns[i][2]])
+				keylist.append((vname, url))
 			#for (s,u,n) in self.ns:
 			#	name = '-'.join([s,n])
 			#	vurl = self.vurls[i]
 			#	keylist.append((name,vurl))
 			#	i = i + 1
-			keylist = [ ('-'.join([s,n]), self.vurls[int(re.search(r'(\d+)',s).group(1)) - 1 ]) for (s,u,n) in self.ns ]
+			#keylist = [ ('-'.join([s,n]), self.vurls[int(re.search(r'(\d+)',s).group(1)) - 1 ]) for (s,u,n) in self.ns ]
 			for (name, vurl) in keylist:
 				self.download(vurl,name)
 
